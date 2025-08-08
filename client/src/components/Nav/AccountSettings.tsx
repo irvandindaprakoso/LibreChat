@@ -10,6 +10,7 @@ import useAvatar from '~/hooks/Messages/useAvatar';
 import { useLocalize } from '~/hooks';
 import Settings from './Settings';
 import store from '~/store';
+import SubscriptionsView from '~/components/Chat/Subscriptions/SubscriptionsView';
 
 function AccountSettings() {
   const localize = useLocalize();
@@ -23,6 +24,7 @@ function AccountSettings() {
 
   const avatarSrc = useAvatar(user);
   const avatarSeed = user?.avatar || user?.name || user?.username || '';
+  const [showSubscription, setShowSubscription] = useState(false);
 
   return (
     <Select.SelectProvider>
@@ -83,6 +85,15 @@ function AccountSettings() {
             <DropdownMenuSeparator />
           </>
         )}
+        
+        <Select.SelectItem
+          value=""
+          onClick={() => setShowSubscription(true)}
+          className="select-item text-sm"
+        >
+          <FileText className="icon-md" aria-hidden="true" />
+          {localize('com_nav_subscription') || 'Subscription'}
+        </Select.SelectItem>
         <Select.SelectItem
           value=""
           onClick={() => setShowFiles(true)}
@@ -122,6 +133,7 @@ function AccountSettings() {
       </Select.SelectPopover>
       {showFiles && <FilesView open={showFiles} onOpenChange={setShowFiles} />}
       {showSettings && <Settings open={showSettings} onOpenChange={setShowSettings} />}
+      {showSubscription && (<SubscriptionsView open={showSubscription} onOpenChange={setShowSubscription} />)}
     </Select.SelectProvider>
   );
 }
