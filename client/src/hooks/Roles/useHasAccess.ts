@@ -1,5 +1,5 @@
 import { useMemo, useCallback, useContext } from 'react';
-import type { TUser, PermissionTypes, Permissions } from 'librechat-data-provider';
+import { TUser, PermissionTypes, Permissions, SystemRoles } from 'librechat-data-provider';
 import { AuthContext } from '~/hooks/AuthContext';
 
 const useHasAccess = ({
@@ -24,6 +24,11 @@ const useHasAccess = ({
       permissionType: PermissionTypes;
       permission: Permissions;
     }) => {
+      // handle subscriptions 
+      if (isAuthenticated && user?.role === SystemRoles.ADMIN && permissionType === PermissionTypes.SUBSCRIPTIONS) {
+        return true
+      }
+
       if (!authContext) {
         return false;
       }

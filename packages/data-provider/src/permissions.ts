@@ -40,6 +40,11 @@ export enum PermissionTypes {
    * Type for using the "File Search" feature
    */
   FILE_SEARCH = 'FILE_SEARCH',
+
+  /**
+   * Type for using the "Subscription" feature
+   */
+  SUBSCRIPTIONS = 'SUBSCRIPTIONS',
 }
 
 /**
@@ -112,6 +117,14 @@ export const fileSearchPermissionsSchema = z.object({
 });
 export type TFileSearchPermissions = z.infer<typeof fileSearchPermissionsSchema>;
 
+export const subscriptionPermissionsSchema = z.object({
+  [Permissions.USE]: z.boolean().default(true),
+  [Permissions.CREATE]: z.boolean().default(true),
+  [Permissions.UPDATE]: z.boolean().default(true),
+  [Permissions.READ]: z.boolean().default(true),
+  [Permissions.OPT_OUT]: z.boolean().default(true),
+});
+export type TSubscriptionPermissions = z.infer<typeof subscriptionPermissionsSchema>;
 // Define a single permissions schema that holds all permission types.
 export const permissionsSchema = z.object({
   [PermissionTypes.PROMPTS]: promptPermissionsSchema,
@@ -123,4 +136,5 @@ export const permissionsSchema = z.object({
   [PermissionTypes.RUN_CODE]: runCodePermissionsSchema,
   [PermissionTypes.WEB_SEARCH]: webSearchPermissionsSchema,
   [PermissionTypes.FILE_SEARCH]: fileSearchPermissionsSchema,
+  [PermissionTypes.SUBSCRIPTIONS]: subscriptionPermissionsSchema,
 });

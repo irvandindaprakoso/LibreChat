@@ -12,6 +12,7 @@ import {
   fileSearchPermissionsSchema,
   multiConvoPermissionsSchema,
   temporaryChatPermissionsSchema,
+  subscriptionPermissionsSchema,
 } from './permissions';
 
 /**
@@ -78,6 +79,13 @@ const defaultRolesSchema = z.object({
       [PermissionTypes.FILE_SEARCH]: fileSearchPermissionsSchema.extend({
         [Permissions.USE]: z.boolean().default(true),
       }),
+      [PermissionTypes.SUBSCRIPTIONS]: subscriptionPermissionsSchema.extend({
+        [Permissions.USE]: z.boolean().default(true),
+        [Permissions.CREATE]: z.boolean().default(true),
+        [Permissions.UPDATE]: z.boolean().default(true),
+        [Permissions.READ]: z.boolean().default(true),
+        [Permissions.OPT_OUT]: z.boolean().default(true),
+      }),
     }),
   }),
   [SystemRoles.USER]: roleSchema.extend({
@@ -125,6 +133,13 @@ export const roleDefaults = defaultRolesSchema.parse({
       [PermissionTypes.FILE_SEARCH]: {
         [Permissions.USE]: true,
       },
+      [PermissionTypes.SUBSCRIPTIONS]: {
+        [Permissions.USE]: true,
+        [Permissions.CREATE]: true,
+        [Permissions.UPDATE]: true,
+        [Permissions.READ]: true,
+        [Permissions.OPT_OUT]: true,
+      },
     },
   },
   [SystemRoles.USER]: {
@@ -139,6 +154,7 @@ export const roleDefaults = defaultRolesSchema.parse({
       [PermissionTypes.RUN_CODE]: {},
       [PermissionTypes.WEB_SEARCH]: {},
       [PermissionTypes.FILE_SEARCH]: {},
+      [PermissionTypes.SUBSCRIPTIONS]: {},
     },
   },
 });

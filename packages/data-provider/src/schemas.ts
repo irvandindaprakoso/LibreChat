@@ -817,6 +817,17 @@ export const tConversationTagSchema = z.object({
 });
 export type TConversationTag = z.infer<typeof tConversationTagSchema>;
 
+export const tSubscriptionSchema = z.object({
+  _id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  price: z.number(),
+  feature: z.array(z.string()),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+export type TSubscription = z.infer<typeof tSubscriptionSchema>;
+
 export const googleBaseSchema = tConversationSchema.pick({
   model: true,
   modelLabel: true,

@@ -19,6 +19,7 @@ import PromptsAccordion from '~/components/Prompts/PromptsAccordion';
 import Parameters from '~/components/SidePanel/Parameters/Panel';
 import FilesPanel from '~/components/SidePanel/Files/Panel';
 import MCPPanel from '~/components/SidePanel/MCP/MCPPanel';
+import SubscriptionPanel from '~/components/SidePanel/Subscriptions/SubscriptionPanel';
 import { useGetStartupConfig } from '~/data-provider';
 import { useHasAccess } from '~/hooks';
 
@@ -60,6 +61,10 @@ export default function useSideNavLinks({
   const hasAccessToCreateAgents = useHasAccess({
     permissionType: PermissionTypes.AGENTS,
     permission: Permissions.CREATE,
+  });
+  const hasAccessToSubscription = useHasAccess({
+    permissionType: PermissionTypes.SUBSCRIPTIONS,
+    permission: Permissions.USE,
   });
   const { data: startupConfig } = useGetStartupConfig();
 
@@ -152,6 +157,17 @@ export default function useSideNavLinks({
       });
     }
 
+    // Subscription management panel
+    if (hasAccessToSubscription) {
+      links.push({
+        title: 'com_sidepanel_subscription',
+        label: '',
+        icon: Blocks, // Ganti dengan icon lain jika ada
+        id: 'subscription',
+        Component: SubscriptionPanel,
+      });
+    }
+
     if (
       startupConfig?.mcpServers &&
       Object.values(startupConfig.mcpServers).some(
@@ -191,6 +207,7 @@ export default function useSideNavLinks({
     hasAccessToReadMemories,
     hasAccessToBookmarks,
     hasAccessToCreateAgents,
+    hasAccessToSubscription,
     hidePanel,
     startupConfig,
   ]);
