@@ -7,7 +7,8 @@ export type TSubscription = {
   _id: string;
   title: string;
   description: string;
-  price: number;
+  priceMonthly: number;
+  priceYearly: number;
   feature: string[];
   created_at: string;
   updated_at: string;
@@ -27,7 +28,6 @@ export function useGetSubscription(options = {}) {
 
 export function useUpdateSubscription() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
       const res = await axios.put(`/api/subscription/${id}`, data);

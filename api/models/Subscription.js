@@ -6,7 +6,8 @@ const initialSubscriptions = [
   {
     title: 'Premium Plan',
     description: 'Access to all features',
-    price: 10,
+    priceMonthly: 10,
+    priceYearly: 120,
     feature: ['Feature 1', 'Feature 2', 'Feature 3'],
   },
 ];
@@ -32,7 +33,10 @@ const getSubscription = async () => {
  * @returns {Promise<Object|null>} Updated subscription.
  */
 const updateSubscription = async (id, data) => {
-  return await Subscription.findByIdAndUpdate(id, data, { new: true, lean: true });
+  return await Subscription.findByIdAndUpdate(
+    id,
+    { $set: data }, // ensure it explicitly sets the values
+    { new: true, lean: true });
 };
 
 /**

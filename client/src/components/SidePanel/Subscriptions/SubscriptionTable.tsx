@@ -11,7 +11,8 @@ const SubscriptionTable = () => {
 
   const [formData, setFormData] = useState({
     title: subscription?.title || '',
-    price: subscription?.price ?? 0,
+    priceMonthly: subscription?.priceMonthly ?? 0,
+    priceYearly: subscription?.priceYearly ?? 0,
     description: subscription?.description || '',
     feature: Array.isArray(subscription?.feature) ? subscription.feature : [],
   });
@@ -20,18 +21,20 @@ const SubscriptionTable = () => {
     if (subscription) {
       setFormData({
         title: subscription.title || '',
-        price: subscription.price ?? 0,
+        priceMonthly: subscription.priceMonthly ?? 0,
+        priceYearly: subscription.priceYearly ?? 0,
         description: subscription.description || '',
         feature: Array.isArray(subscription.feature) ? subscription.feature : [],
       });
     }
   }, [subscription]);
 
-    const handleChange = (
+  const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     idx?: number
   ) => {
     const { name, value } = e.target;
+
     if (name === 'feature' && typeof idx === 'number') {
       setFormData((prev) => {
         const updatedFeatures = [...prev.feature];
@@ -41,7 +44,10 @@ const SubscriptionTable = () => {
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: name === 'price' ? Number(value) : value,
+        [name]:
+          name === 'priceMonthly' || name === 'priceYearly'
+            ? Number(value)
+            : value,
       }));
     }
   };
@@ -67,14 +73,15 @@ const SubscriptionTable = () => {
       console.error('Subscription ID is missing');
       return;
     }
-
+    
     updateSubscription(
       {
         id: subscription._id,
         data: {
           title: formData.title,
           description: formData.description,
-          price: formData.price,
+          priceMonthly: formData.priceMonthly,
+          priceYearly: formData.priceYearly,
           feature: formData.feature,
         },
       },
@@ -110,13 +117,22 @@ const SubscriptionTable = () => {
         id="input-title"
       />
 
-      <label htmlFor="input-price">Price</label>
+      <label htmlFor="input-price-monthly">Price Monthly</label>
       <Input
-        name="price"
+        name="priceMonthly"
         type="number"
-        value={formData.price}
+        value={formData.priceMonthly}
         onChange={handleChange}
-        id="input-price"
+        id="input-price-monthly"
+      />
+
+      <label htmlFor="input-price-yearly">Price Yearly</label>
+      <Input
+        name="priceYearly"
+        type="number"
+        value={formData.priceYearly}
+        onChange={handleChange}
+        id="input-price-yearly"
       />
 
       <label htmlFor="input-description">Description</label>
@@ -158,9 +174,9 @@ const SubscriptionTable = () => {
       <Button
         type="submit"
         className="mt-4 w-full"
-        disabled={isLoading }
+        disabled={isLoading}
       >
-        {isLoading  ? 'Updating...' : 'Submit'}
+        {isLoading ? 'Updating...' : 'Submit'}
       </Button>
     </form>
   );

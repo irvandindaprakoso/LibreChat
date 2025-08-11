@@ -11,7 +11,11 @@ const subscriptionSchema = new Schema<ISubscription>(
       type: String,
       required: true,
     },
-    price: {
+    priceMonthly: {
+      type: Number,
+      required: true,
+    },
+    priceYearly: {
       type: Number,
       required: true,
     },
