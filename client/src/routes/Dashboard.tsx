@@ -6,54 +6,16 @@ import {
   EmptyPromptPreview,
 } from '~/components/Prompts';
 import DashboardRoute from './Layouts/Dashboard';
+import ListUser from '~/components/SidePanel/Users/ListUser'; 
 
 const dashboardRoutes = {
   path: 'd/*',
   element: <DashboardRoute />,
   children: [
-    /*
     {
-      element: <FileDashboardView />,
-      children: [
-        {
-          index: true,
-          element: <EmptyVectorStorePreview />,
-        },
-        {
-          path: ':vectorStoreId',
-          element: <DataTableFilePreview />,
-        },
-      ],
+      path: 'users/*',
+      element: <ListUser />,
     },
-    {
-      path: 'files/*',
-      element: <FilesListView />,
-      children: [
-        {
-          index: true,
-          element: <EmptyFilePreview />,
-        },
-        {
-          path: ':fileId',
-          element: <FilePreview />,
-        },
-      ],
-    },
-    {
-      path: 'vector-stores/*',
-      element: <VectorStoreView />,
-      children: [
-        {
-          index: true,
-          element: <EmptyVectorStorePreview />,
-        },
-        {
-          path: ':vectorStoreId',
-          element: <VectorStorePreview />,
-        },
-      ],
-    },
-    */
     {
       path: 'prompts/*',
       element: <PromptsView />,

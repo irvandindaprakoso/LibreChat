@@ -27,6 +27,7 @@ const keys = require('./keys');
 const user = require('./user');
 const mcp = require('./mcp');
 const subscription = require('./subscription');
+const adminUsers = require('./admin/users');
 
 module.exports = {
   edit,
@@ -57,5 +58,6 @@ module.exports = {
   categories,
   staticRoute,
   mcp,
-  subscription
+  subscription,
+  adminUsers
 };

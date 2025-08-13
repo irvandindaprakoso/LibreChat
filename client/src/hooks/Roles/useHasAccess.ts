@@ -25,8 +25,12 @@ const useHasAccess = ({
       permission: Permissions;
     }) => {
       // handle subscriptions 
-      if (isAuthenticated && user?.role === SystemRoles.ADMIN && permissionType === PermissionTypes.SUBSCRIPTIONS) {
-        return true
+      if (
+      isAuthenticated &&
+      user?.role === SystemRoles.ADMIN &&
+      [PermissionTypes.SUBSCRIPTIONS, PermissionTypes.USERS].includes(permissionType)
+      ) {
+        return true;
       }
 
       if (!authContext) {

@@ -13,6 +13,7 @@ import {
   multiConvoPermissionsSchema,
   temporaryChatPermissionsSchema,
   subscriptionPermissionsSchema,
+  userPermissionsSchema,
 } from './permissions';
 
 /**
@@ -86,11 +87,26 @@ const defaultRolesSchema = z.object({
         [Permissions.READ]: z.boolean().default(true),
         [Permissions.OPT_OUT]: z.boolean().default(true),
       }),
+      [PermissionTypes.USERS]: userPermissionsSchema.extend({
+        [Permissions.USE]: z.boolean().default(true),
+        [Permissions.CREATE]: z.boolean().default(true),
+        [Permissions.UPDATE]: z.boolean().default(true),
+        [Permissions.READ]: z.boolean().default(true),
+        [Permissions.SHARE]: z.boolean().default(false),
+      }),
     }),
   }),
   [SystemRoles.USER]: roleSchema.extend({
     name: z.literal(SystemRoles.USER),
-    permissions: permissionsSchema,
+    permissions: permissionsSchema.extend({
+      [PermissionTypes.USERS]: userPermissionsSchema.extend({
+        [Permissions.USE]: z.boolean().default(false),
+        [Permissions.CREATE]: z.boolean().default(false),
+        [Permissions.UPDATE]: z.boolean().default(false),
+        [Permissions.READ]: z.boolean().default(false),
+        [Permissions.SHARE]: z.boolean().default(false),
+      }),
+    }),
   }),
 });
 
@@ -140,6 +156,13 @@ export const roleDefaults = defaultRolesSchema.parse({
         [Permissions.READ]: true,
         [Permissions.OPT_OUT]: true,
       },
+      [PermissionTypes.USERS]: {
+        [Permissions.USE]: true,
+        [Permissions.CREATE]: true,
+        [Permissions.UPDATE]: true,
+        [Permissions.READ]: true,
+        [Permissions.SHARE]: false,
+      },
     },
   },
   [SystemRoles.USER]: {
@@ -155,6 +178,13 @@ export const roleDefaults = defaultRolesSchema.parse({
       [PermissionTypes.WEB_SEARCH]: {},
       [PermissionTypes.FILE_SEARCH]: {},
       [PermissionTypes.SUBSCRIPTIONS]: {},
+      [PermissionTypes.USERS]: {
+        [Permissions.USE]: false,
+        [Permissions.CREATE]: false,
+        [Permissions.UPDATE]: false,
+        [Permissions.READ]: false,
+        [Permissions.SHARE]: false,
+      },
     },
   },
 });

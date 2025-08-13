@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Blocks, MCPIcon, AttachmentIcon } from '@librechat/client';
-import { MessageSquareQuote, ArrowRightToLine, Settings2, Database, Bookmark } from 'lucide-react';
+import { MessageSquareQuote, ArrowRightToLine, Settings2, Database, Bookmark, Users } from 'lucide-react';
 import {
   isAssistantsEndpoint,
   isAgentsEndpoint,
@@ -20,6 +20,7 @@ import Parameters from '~/components/SidePanel/Parameters/Panel';
 import FilesPanel from '~/components/SidePanel/Files/Panel';
 import MCPPanel from '~/components/SidePanel/MCP/MCPPanel';
 import SubscriptionPanel from '~/components/SidePanel/Subscriptions/SubscriptionPanel';
+import UserPanel from '~/components/SidePanel/Users/UserPanel';
 import { useGetStartupConfig } from '~/data-provider';
 import { useHasAccess } from '~/hooks';
 
@@ -65,6 +66,10 @@ export default function useSideNavLinks({
   const hasAccessToSubscription = useHasAccess({
     permissionType: PermissionTypes.SUBSCRIPTIONS,
     permission: Permissions.USE,
+  });
+  const hasAccessToUsers = useHasAccess({
+    permissionType: PermissionTypes.USERS,
+    permission: Permissions.READ,
   });
   const { data: startupConfig } = useGetStartupConfig();
 
@@ -157,6 +162,17 @@ export default function useSideNavLinks({
       });
     }
 
+    // User management panel
+    if (hasAccessToUsers) {
+      links.push({
+        title: 'com_sidepanel_user_management',
+        label: '',
+        icon: Users,
+        id: 'users',
+        Component: UserPanel,
+      });
+    }
+
     // Subscription management panel
     if (hasAccessToSubscription) {
       links.push({
@@ -208,6 +224,7 @@ export default function useSideNavLinks({
     hasAccessToBookmarks,
     hasAccessToCreateAgents,
     hasAccessToSubscription,
+    hasAccessToUsers,
     hidePanel,
     startupConfig,
   ]);

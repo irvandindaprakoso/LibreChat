@@ -858,3 +858,20 @@ export const createMemory = (data: {
 }): Promise<{ created: boolean; memory: q.TUserMemory }> => {
   return request.post(endpoints.memories(), data);
 };
+
+// Admin user management functions
+export const getUsers = (): Promise<t.TUser[]> => {
+  return request.get(endpoints.adminUsers());
+};
+
+// export const getUser = (userId: string): Promise<t.TUser> => {
+//   return request.get(endpoints.adminUser(userId));
+// };
+
+export const updateUser = (variables: { userId: string; updates: t.TUpdateUser }): Promise<t.TUser> => {
+  return request.put(endpoints.adminUser(variables.userId), variables.updates);
+};
+
+// export const deleteUser = (variables: { userId: string }): Promise<void> => {
+//   return request.delete(endpoints.adminUser(variables.userId));
+// };

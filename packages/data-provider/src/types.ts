@@ -191,6 +191,11 @@ export type TUser = {
   personalization?: {
     memories?: boolean;
   };
+  subscription?: {
+    status?: string;
+    type?: string;
+    expiredAt?: Date | null;
+  },
   createdAt: string;
   updatedAt: string;
 };
@@ -628,4 +633,24 @@ export type TBalanceResponse = {
   refillIntervalUnit?: 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months';
   lastRefill?: Date;
   refillAmount?: number;
+};
+
+// Admin user management types
+export type TCreateUser = {
+  username: string;
+  email: string;
+  password: string;
+  name?: string;
+  role?: string;
+  emailVerified?: boolean;
+  provider?: string;
+};
+
+export type TUpdateUser = {
+  name?: string;
+  subscription?: {
+    type?: string;
+    status?:string;
+    expiredAt?: Date | null;
+  }
 };
