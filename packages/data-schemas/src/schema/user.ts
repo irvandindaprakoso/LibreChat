@@ -138,6 +138,18 @@ const userSchema = new Schema<IUser>(
       },
       default: {},
     },
+    subscription: {
+      status: {
+        type: String,
+        default: "free",
+      },
+      type: {
+        type: String,
+      },
+      expiredAt: {
+        type: Date,
+      }
+    },
   },
   { timestamps: true },
 );

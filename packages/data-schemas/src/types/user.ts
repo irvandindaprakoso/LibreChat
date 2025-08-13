@@ -33,6 +33,11 @@ export interface IUser extends Document {
   personalization?: {
     memories?: boolean;
   };
+  subscription?: {
+    status?: string;
+    type?: string;
+    expiredAt?: Date | null;
+  },
   createdAt?: Date;
   updatedAt?: Date;
 }
