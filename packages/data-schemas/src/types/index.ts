@@ -16,5 +16,7 @@ export * from './file';
 export * from './share';
 export * from './pluginAuth';
 export * from './subscription';
+export * from './invoice';
+export * from './paymentLog';
 /* Memories */
 export * from './memory';

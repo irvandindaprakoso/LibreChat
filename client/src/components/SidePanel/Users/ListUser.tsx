@@ -1,24 +1,16 @@
 import { useState } from 'react';
 import { useGetUsers } from '~/data-provider';
-import { useHasAccess, useLocalize } from '~/hooks';
-import { PermissionTypes, Permissions } from 'librechat-data-provider';
-import { Button } from '@librechat/client';
-import { Plus, Search, Users as UsersIcon } from 'lucide-react';
+import { Search, Users as UsersIcon } from 'lucide-react';
 import UserTable from './UserTable';
 import DashBreadcrumb from '~/routes/Layouts/DashBreadcrumb';
+import { useLocalize } from '~/hooks';
 
 const ListUser = () => {
   const localize = useLocalize();
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const hasAccessToCreateUsers = useHasAccess({
-    permissionType: PermissionTypes.USERS,
-    permission: Permissions.CREATE,
-  });
-
   const { data: users, isLoading, error } = useGetUsers();
-  console.log(users);
+
   const filteredUsers =
     users?.users?.filter(
       (user) =>
@@ -55,15 +47,6 @@ const ListUser = () => {
                   {localize('com_sidepanel_user_management')}
                 </h3>
               </div>
-              {hasAccessToCreateUsers && (
-                <Button
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  {localize('com_ui_create_user')}
-                </Button>
-              )}
             </div>
 
             {/* Search */}

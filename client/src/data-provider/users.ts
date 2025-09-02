@@ -8,7 +8,7 @@ import type {
 import type * as t from 'librechat-data-provider';
 
 export interface User {
-  id: string;
+  _id: string;
   username: string;
   email: string;
   name: string;
@@ -27,8 +27,10 @@ export interface User {
   };
   subscription?: {
     status?: string;
-    type?: string;
-    expiredAt?: Date | null;
+    plan?: string;
+    billingCycle?: string;
+    startedAt?: Date | null;
+    expiresAt?: Date | null;
   };
   createdAt: string;
   updatedAt: string;
@@ -50,6 +52,13 @@ export interface UpdateUserData {
   role?: string;
   emailVerified?: boolean;
   isActive?: boolean;
+  subscription?: {
+    status?: string;
+    plan?: string;
+    billingCycle?: string;
+    startedAt?: Date | null;
+    expiresAt?: Date | null;
+  };
 }
 
 export interface UpdateUserVars {
@@ -62,9 +71,9 @@ export interface DeleteUserVars {
 }
 
 export const useGetUsers = (
-  config?: UseQueryOptions<User[]>,
-): QueryObserverResult<User[]> => {
-  return useQuery<User[]>([QueryKeys.users], () => dataService.getUsers(), {
+  config?: UseQueryOptions<any[]>,
+): QueryObserverResult<any[]> => {
+  return useQuery<any[]>([QueryKeys.users], () => dataService.getUsers(), {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: true,
@@ -75,9 +84,9 @@ export const useGetUsers = (
 
 export const useGetUser = (
   userId: string,
-  config?: UseQueryOptions<User>,
-): QueryObserverResult<User> => {
-  return useQuery<User>([QueryKeys.users, userId], () => dataService.getUser(userId), {
+  config?: UseQueryOptions<any>,
+): QueryObserverResult<any> => {
+  return useQuery<any>([QueryKeys.users, userId], () => dataService.getUser(userId), {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: true,
@@ -88,21 +97,23 @@ export const useGetUser = (
 };
 
 export const useUpdateUser = (
-  options?: t.MutationOptions<User, t.TError | undefined, UpdateUserVars, unknown>,
-): UseMutationResult<User, t.TError | undefined, UpdateUserVars, unknown> => {
+  options?: t.MutationOptions<any, t.TError | undefined, UpdateUserVars, unknown>,
+): UseMutationResult<any, t.TError | undefined, UpdateUserVars, unknown> => {
   const queryClient = useQueryClient();
   const { onMutate, onSuccess, onError } = options ?? {};
 
   return useMutation(
     async (variables) => {
-      // Pastikan payload sudah benar
+      // Ensure payload is correct for new subscription structure
       const payload = {
         ...variables.updates,
         ...(variables.updates.subscription && {
           subscription: {
             status: variables.updates.subscription.status ?? '',
-            type: variables.updates.subscription.type ?? '',
-            expiredAt: variables.updates.subscription.expiredAt ?? null,
+            plan: variables.updates.subscription.plan ?? '',
+            billingCycle: variables.updates.subscription.billingCycle ?? '',
+            startedAt: variables.updates.subscription.startedAt ?? null,
+            expiresAt: variables.updates.subscription.expiresAt ?? null,
           },
         }),
       };
@@ -116,7 +127,7 @@ export const useUpdateUser = (
       onMutate: async (variables) => {
         await queryClient.cancelQueries([QueryKeys.users]);
 
-        const previousData = queryClient.getQueryData<{ users: User[]; pagination: any }>([QueryKeys.users]);
+        const previousData = queryClient.getQueryData<{ users: any[]; pagination: any }>([QueryKeys.users]);
 
         if (previousData) {
           queryClient.setQueryData([QueryKeys.users], {

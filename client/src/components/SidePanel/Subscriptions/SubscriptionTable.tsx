@@ -9,21 +9,27 @@ const SubscriptionTable = () => {
   const localize = useLocalize();
   const { mutate: updateSubscription, isLoading } = useUpdateSubscription();
 
-  const [formData, setFormData] = useState({
-    title: subscription?.title || '',
-    priceMonthly: subscription?.priceMonthly ?? 0,
-    priceYearly: subscription?.priceYearly ?? 0,
-    description: subscription?.description || '',
-    feature: Array.isArray(subscription?.feature) ? subscription.feature : [],
-  });
+  const initialState = {
+    title: '',
+    description: '',
+    priceMonthly: 0,
+    priceYearly: 0,
+    stripePriceIdMonthly: '',
+    stripePriceIdYearly: '',
+    feature: [] as string[],
+  };
+
+  const [formData, setFormData] = useState(initialState);
 
   useEffect(() => {
     if (subscription) {
       setFormData({
         title: subscription.title || '',
+        description: subscription.description || '',
         priceMonthly: subscription.priceMonthly ?? 0,
         priceYearly: subscription.priceYearly ?? 0,
-        description: subscription.description || '',
+        stripePriceIdMonthly: subscription.stripePriceIdMonthly || '',
+        stripePriceIdYearly: subscription.stripePriceIdYearly || '',
         feature: Array.isArray(subscription.feature) ? subscription.feature : [],
       });
     }
@@ -37,61 +43,36 @@ const SubscriptionTable = () => {
 
     if (name === 'feature' && typeof idx === 'number') {
       setFormData((prev) => {
-        const updatedFeatures = [...prev.feature];
-        updatedFeatures[idx] = value;
-        return { ...prev, feature: updatedFeatures };
+        const updated = [...prev.feature];
+        updated[idx] = value;
+        return { ...prev, feature: updated };
       });
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]:
-          name === 'priceMonthly' || name === 'priceYearly'
-            ? Number(value)
-            : value,
+        [name]: ['priceMonthly', 'priceYearly'].includes(name) ? Number(value) : value,
       }));
     }
   };
 
-  const addFeature = () => {
-    setFormData((prev) => ({
-      ...prev,
-      feature: [...prev.feature, ''],
-    }));
-  };
+  const addFeature = () =>
+    setFormData((prev) => ({ ...prev, feature: [...prev.feature, ''] }));
 
-  const removeFeature = (idx: number) => {
+  const removeFeature = (idx: number) =>
     setFormData((prev) => ({
       ...prev,
       feature: prev.feature.filter((_, i) => i !== idx),
     }));
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!subscription?._id) return console.error('Subscription ID missing');
 
-    if (!subscription?._id) {
-      console.error('Subscription ID is missing');
-      return;
-    }
-    
     updateSubscription(
+      { id: subscription._id, data: formData },
       {
-        id: subscription._id,
-        data: {
-          title: formData.title,
-          description: formData.description,
-          priceMonthly: formData.priceMonthly,
-          priceYearly: formData.priceYearly,
-          feature: formData.feature,
-        },
-      },
-      {
-        onSuccess: () => {
-          console.log('Update berhasil!');
-        },
-        onError: (error) => {
-          console.error('Gagal update:', error);
-        },
+        onSuccess: () => console.log('Update berhasil!'),
+        onError: (err) => console.error('Gagal update:', err),
       }
     );
   };
@@ -106,80 +87,41 @@ const SubscriptionTable = () => {
 
   return (
     <form
-      className="rounded-lg border p-4 mb-4 bg-surface-secondary shadow space-y-2"
+      className="rounded-lg border p-4 mb-4 bg-surface-secondary shadow space-y-3"
       onSubmit={handleSubmit}
     >
-      <label htmlFor="input-title">Title</label>
-      <Input
-        name="title"
-        value={formData.title}
-        onChange={handleChange}
-        id="input-title"
-      />
+      <FormRow label="Title" name="title" value={formData.title} onChange={handleChange} />
+      <FormRow label="Description" name="description" value={formData.description} onChange={handleChange} />
 
-      <label htmlFor="input-price-monthly">Price Monthly</label>
-      <Input
-        name="priceMonthly"
-        type="number"
-        value={formData.priceMonthly}
-        onChange={handleChange}
-        id="input-price-monthly"
-      />
+      <FormRow label="Price Monthly" name="priceMonthly" type="number" value={formData.priceMonthly} onChange={handleChange} />
 
-      <label htmlFor="input-price-yearly">Price Yearly</label>
-      <Input
-        name="priceYearly"
-        type="number"
-        value={formData.priceYearly}
-        onChange={handleChange}
-        id="input-price-yearly"
-      />
-
-      <label htmlFor="input-description">Description</label>
-      <Input
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
-        id="input-description"
-      />
+      <FormRow label="Price Yearly" name="priceYearly" type="number" value={formData.priceYearly} onChange={handleChange} />
 
       <div className="text-sm font-medium mt-3">Features:</div>
       {formData.feature.map((feat, i) => (
-        <div key={i} className="flex items-center gap-2 mb-1">
-          <Input
-            name="feature"
-            value={feat}
-            onChange={(e) => handleChange(e, i)}
-            id={`input-feature-${i}`}
-          />
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={() => removeFeature(i)}
-          >
+        <div key={i} className="flex items-center gap-2">
+          <Input name="feature" value={feat} onChange={(e) => handleChange(e, i)} />
+          <Button type="button" variant="destructive" onClick={() => removeFeature(i)}>
             Remove
           </Button>
         </div>
       ))}
-
-      <Button
-        type="button"
-        variant="secondary"
-        onClick={addFeature}
-        className="mt-2"
-      >
+      <Button type="button" variant="secondary" onClick={addFeature}>
         + Add Feature
       </Button>
 
-      <Button
-        type="submit"
-        className="mt-4 w-full"
-        disabled={isLoading}
-      >
+      <Button type="submit" className="mt-4 w-full" disabled={isLoading}>
         {isLoading ? 'Updating...' : 'Submit'}
       </Button>
     </form>
   );
 };
+
+const FormRow = ({ label, name, type = 'text', value, onChange }: any) => (
+  <div>
+    <label htmlFor={`input-${name}`} className="block mb-1">{label}</label>
+    <Input id={`input-${name}`} name={name} type={type} value={value} onChange={onChange} />
+  </div>
+);
 
 export default SubscriptionTable;

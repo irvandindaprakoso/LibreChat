@@ -141,14 +141,24 @@ const userSchema = new Schema<IUser>(
     subscription: {
       status: {
         type: String,
-        default: "free",
+        default: "inactive",
       },
-      type: {
+      plan: {
+        type: String,
+        default: "Free Plan",
+      },
+      billingCycle: {
         type: String,
       },
-      expiredAt: {
+      expiresAt: {
+        type: Date,
+      },
+      startedAt: {
         type: Date,
       }
+    },
+    stripeCustomerId: {
+      type: String
     },
   },
   { timestamps: true },

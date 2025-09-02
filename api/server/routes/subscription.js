@@ -1,9 +1,9 @@
 const express = require('express');
-
 const { getSubscription, updateSubscription } = require('~/models/Subscription');
 const optionalJwtAuth = require('~/server/middleware/optionalJwtAuth');
 const router = express.Router();
-
+// import Stripe from 'stripe';
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 /**
  * GET /
  * Retrieves subscription.
@@ -27,16 +27,41 @@ router.get('/', optionalJwtAuth, async (req, res) => {
  */
 router.put('/:subscriptionId', optionalJwtAuth, async (req, res) => {
   try {
+    // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const { subscriptionId } = req.params;
-
+    const { title, description, priceMonthly, priceYearly, feature } = req.body;
     // Pastikan user login
     if (!req.user?.id) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
+    // Generate Stripe Price ID for Monthly
+    const monthlyPrice = await stripe.prices.create({
+      unit_amount: priceMonthly * 100,
+      currency: 'usd',
+      recurring: { interval: 'month' },
+      product_data: { name: `${title} Monthly` },
+    });
+
+    // Generate Stripe Price ID for Yearly
+    const yearlyPrice = await stripe.prices.create({
+      unit_amount: priceYearly * 100, 
+      currency: 'usd',
+      recurring: { interval: 'year' },
+      product_data: { name: `${title} Yearly` },
+    });
+    
     const updatedSubscription = await updateSubscription(
       subscriptionId,
-      req.body
+      {
+        title,
+        description,
+        priceMonthly,
+        priceYearly,
+        stripePriceIdMonthly: monthlyPrice.id,
+        stripePriceIdYearly: yearlyPrice.id,
+        feature,
+      },
     );
 
     if (!updatedSubscription) {

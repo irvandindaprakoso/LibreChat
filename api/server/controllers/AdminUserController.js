@@ -34,6 +34,7 @@ const getUsersController = async (req, res) => {
 
     // Get users with pagination using User model directly
     const users = await User.find(query, 'email username name role provider avatar createdAt emailVerified lastActiveAt subscription')
+      .where('role').ne(SystemRoles.ADMIN)
       .skip(parseInt(skip))
       .limit(parseInt(limit))
       .sort({ createdAt: -1 })

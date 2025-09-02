@@ -14,6 +14,11 @@ export interface ITransaction extends Document {
   inputTokens?: number;
   writeTokens?: number;
   readTokens?: number;
+  status: { type: String, enum: ['pending', 'paid', 'failed', 'refunded'], default: 'pending' },
+  stripePaymentIntentId: String,
+  stripeCheckoutSessionId: String,
+  stripeSubscriptionId: String,
+  stripeInvoiceId: String,
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -51,6 +56,11 @@ const transactionSchema: Schema<ITransaction> = new Schema(
     inputTokens: { type: Number },
     writeTokens: { type: Number },
     readTokens: { type: Number },
+    status: { type: String, enum: ['pending', 'paid', 'failed', 'refunded'], default: 'pending' },
+    stripePaymentIntentId: String,
+    stripeCheckoutSessionId: String,
+    stripeSubscriptionId: String,
+    stripeInvoiceId: String,
   },
   {
     timestamps: true,

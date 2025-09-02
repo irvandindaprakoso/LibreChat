@@ -28,6 +28,7 @@ const user = require('./user');
 const mcp = require('./mcp');
 const subscription = require('./subscription');
 const adminUsers = require('./admin/users');
+const stripe = require('./stripe');
 
 module.exports = {
   edit,
@@ -59,5 +60,6 @@ module.exports = {
   staticRoute,
   mcp,
   subscription,
-  adminUsers
+  adminUsers,
+  stripe,
 };

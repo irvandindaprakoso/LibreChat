@@ -22,6 +22,8 @@ import { createSharedLinkModel } from './sharedLink';
 import { createToolCallModel } from './toolCall';
 import { createMemoryModel } from './memory';
 import { createSubscriptionModel } from './subscription';
+import { createInvoiceModel } from './invoice';
+import { createPaymentLogModel } from './paymentLog';
 
 /**
  * Creates all database models for all collections
@@ -52,5 +54,7 @@ export function createModels(mongoose: typeof import('mongoose')) {
     ToolCall: createToolCallModel(mongoose),
     MemoryEntry: createMemoryModel(mongoose),
     Subscription: createSubscriptionModel(mongoose),
+    Invoice: createInvoiceModel(mongoose),
+    PaymentLog: createPaymentLogModel(mongoose),
   };
 }

@@ -38,6 +38,7 @@ export interface IUser extends Document {
     type?: string;
     expiredAt?: Date | null;
   },
+  stripeCustomerId: { type: String }, // ID customer di Stripe
   createdAt?: Date;
   updatedAt?: Date;
 }

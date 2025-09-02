@@ -19,6 +19,15 @@ const subscriptionSchema = new Schema<ISubscription>(
       type: Number,
       required: true,
     },
+    stripeProductId: { 
+      type: String
+    },
+    stripePriceIdMonthly: {
+      type: String
+    },
+    stripePriceIdYearly: {
+      type: String
+    },
     feature: {
       type: Array,
     },

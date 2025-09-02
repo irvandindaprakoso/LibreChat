@@ -15,8 +15,10 @@ export interface User {
   role?: string;
   subscription?: {
     status?: string;
-    type?: string;
-    expiredAt?: Date | null;
+    plan?: string;
+    billingCycle?: string;
+    startedAt?: string;
+    expiresAt?: string;
   },
   createdAt?: string;
   updatedAt?: string;
@@ -91,22 +93,29 @@ const UserTable = ({ users, isLoading }: UserTableProps) => {
               <td className="border border-gray-200 px-4 py-2">
                 <span
                   className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    user.subscription?.status === 'free'
+                    user.subscription?.status === 'inactive'
                       ? 'bg-gray-100 text-gray-800'
                       : 'bg-green-100 text-green-800'
                   }`}
                 >
                   <UserCheck className="h-3 w-3 mr-1" />
 
-                  {user.subscription?.status === 'free' ? (
+                  {user.subscription?.status === 'inactive' ? (
                     user.subscription?.status?.toUpperCase()
                   ) : (
                     <>
                       {user.subscription?.status?.toUpperCase()} &nbsp;|&nbsp;
-                      {user.subscription?.type?.toUpperCase() ?? '-'} &nbsp;|&nbsp;
-                      {user.subscription?.expiredAt
-                        ? new Date(user.subscription.expiredAt).toLocaleDateString()
-                        : '-'}
+                      {user.subscription?.plan?.toUpperCase() ?? '-'} &nbsp;|&nbsp;
+                      <div className="inline-flex flex-col items-start space-y-1">
+                        <span>
+                          Active: {user.subscription?.startedAt
+                            ? new Date(user.subscription.startedAt).toLocaleDateString()
+                            : '-'}
+                          - {user.subscription?.expiresAt
+                            ? new Date(user.subscription.expiresAt).toLocaleDateString()
+                            : '-'}
+                        </span>
+                      </div>
                     </>
                   )}
                 </span>
