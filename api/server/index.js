@@ -55,6 +55,11 @@ const startServer = async () => {
 
   /* Middleware */
   app.use(noIndex);
+  
+  // Stripe webhook route MUST come before express.json() middleware
+  // because Stripe requires the raw request body for signature verification
+  app.use('/api/stripe', routes.stripe);
+  
   app.use(express.json({ limit: '3mb' }));
   app.use(express.urlencoded({ extended: true, limit: '3mb' }));
   app.use(mongoSanitize());
@@ -120,7 +125,6 @@ const startServer = async () => {
   app.use('/api/tags', routes.tags);
   app.use('/api/mcp', routes.mcp);
   app.use('/api/subscription', routes.subscription);
-  app.use('/api/stripe', routes.stripe);
   app.use('/api/admin/users', routes.adminUsers);
 
   // Add the error controller one more time after all routes

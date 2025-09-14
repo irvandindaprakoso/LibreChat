@@ -31,6 +31,8 @@ export interface User {
     billingCycle?: string;
     startedAt?: Date | null;
     expiresAt?: Date | null;
+    isTrial?: boolean;
+    trialDays?: number;
   };
   createdAt: string;
   updatedAt: string;
@@ -58,6 +60,8 @@ export interface UpdateUserData {
     billingCycle?: string;
     startedAt?: Date | null;
     expiresAt?: Date | null;
+    isTrial?: boolean;
+    trialDays?: number;
   };
 }
 
@@ -114,6 +118,8 @@ export const useUpdateUser = (
             billingCycle: variables.updates.subscription.billingCycle ?? '',
             startedAt: variables.updates.subscription.startedAt ?? null,
             expiresAt: variables.updates.subscription.expiresAt ?? null,
+            isTrial: variables.updates.subscription.isTrial ?? false,
+            trialDays: variables.updates.subscription.trialDays ?? 0,
           },
         }),
       };

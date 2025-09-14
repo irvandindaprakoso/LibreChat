@@ -10,8 +10,9 @@ const UserPanel = () => {
   return (
     <div className="flex w-full justify-end">
       <Button
+        style={{ marginTop: '10px' }}
         variant="outline"
-        className="w-full bg-transparent mx-2"
+        className="w-full bg-transparent mx-2 mt-0"
         onClick={() => navigate('/d/users/')}
       >
         <Users className="size-4 mr-2" aria-hidden />

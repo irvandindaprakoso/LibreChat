@@ -35,8 +35,12 @@ export interface IUser extends Document {
   };
   subscription?: {
     status?: string;
-    type?: string;
-    expiredAt?: Date | null;
+    plan?: string;
+    billingCycle?: string;
+    startedAt?: Date | null;
+    expiresAt?: Date | null;
+    isTrial?: boolean;
+    trialDays?: number;
   },
   stripeCustomerId: { type: String }, // ID customer di Stripe
   createdAt?: Date;

@@ -19,6 +19,8 @@ export interface User {
     billingCycle?: string;
     startedAt?: string;
     expiresAt?: string;
+    isTrial?: boolean;
+    trialDays?: number;
   },
   createdAt?: string;
   updatedAt?: string;
@@ -145,14 +147,14 @@ const UserTable = ({ users, isLoading }: UserTableProps) => {
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button
+                  {/* <Button
                     onClick={() => setDeletingUser(user)}
                     variant="ghost"
                     size="sm"
                     className="h-8 w-8 p-0 text-red-600 hover:text-red-800"
                   >
                     <Trash2 className="h-4 w-4" />
-                  </Button>
+                  </Button> */}
                 </div>
               </td>
             </tr>

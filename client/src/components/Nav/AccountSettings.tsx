@@ -86,14 +86,16 @@ function AccountSettings() {
           </>
         )}
         
-        <Select.SelectItem
-          value=""
-          onClick={() => setShowSubscription(true)}
-          className="select-item text-sm"
-        >
-          <FileText className="icon-md" aria-hidden="true" />
-          {localize('com_nav_subscription') || 'Subscription'}
-        </Select.SelectItem>
+        {user?.role !== 'ADMIN' && (
+          <Select.SelectItem
+            value=""
+            onClick={() => setShowSubscription(true)}
+            className="select-item text-sm"
+          >
+            <FileText className="icon-md" aria-hidden="true" />
+            {localize('com_nav_subscription') || 'Subscription'}
+          </Select.SelectItem>
+        )}
         <Select.SelectItem
           value=""
           onClick={() => setShowFiles(true)}

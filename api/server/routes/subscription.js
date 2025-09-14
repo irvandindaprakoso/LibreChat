@@ -27,29 +27,58 @@ router.get('/', optionalJwtAuth, async (req, res) => {
  */
 router.put('/:subscriptionId', optionalJwtAuth, async (req, res) => {
   try {
-    // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const { subscriptionId } = req.params;
     const { title, description, priceMonthly, priceYearly, feature } = req.body;
+    
     // Pastikan user login
     if (!req.user?.id) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    // Generate Stripe Price ID for Monthly
-    const monthlyPrice = await stripe.prices.create({
-      unit_amount: priceMonthly * 100,
-      currency: 'usd',
-      recurring: { interval: 'month' },
-      product_data: { name: `${title} Monthly` },
-    });
+    // First, get the existing subscription to check for existing Stripe price IDs
+    const existingSubscription = await getSubscription();
+    
+    let monthlyPriceId, yearlyPriceId;
 
-    // Generate Stripe Price ID for Yearly
-    const yearlyPrice = await stripe.prices.create({
-      unit_amount: priceYearly * 100, 
-      currency: 'usd',
-      recurring: { interval: 'year' },
-      product_data: { name: `${title} Yearly` },
-    });
+    if (existingSubscription && existingSubscription.stripePriceIdMonthly) {
+      // Update existing monthly price
+      const monthlyPrice = await stripe.prices.update(existingSubscription.stripePriceIdMonthly, {
+        unit_amount: priceMonthly * 100,
+        currency: 'usd',
+        recurring: { interval: 'month', interval_count: 1 },
+        product_data: { name: `${title} Monthly` },
+      });
+      monthlyPriceId = monthlyPrice.id;
+    } else {
+      // Create new monthly price if subscription not found or no existing price ID
+      const monthlyPrice = await stripe.prices.create({
+        unit_amount: priceMonthly * 100,
+        currency: 'usd',
+        recurring: { interval: 'month', interval_count: 1 },
+        product_data: { name: `${title} Monthly` },
+      });
+      monthlyPriceId = monthlyPrice.id;
+    }
+
+    if (existingSubscription && existingSubscription.stripePriceIdYearly) {
+      // Update existing yearly price
+      const yearlyPrice = await stripe.prices.update(existingSubscription.stripePriceIdYearly, {
+        unit_amount: priceYearly * 100, 
+        currency: 'usd',
+        recurring: { interval: 'year', interval_count: 1 },
+        product_data: { name: `${title} Yearly` },
+      });
+      yearlyPriceId = yearlyPrice.id;
+    } else {
+      // Create new yearly price if subscription not found or no existing price ID
+      const yearlyPrice = await stripe.prices.create({
+        unit_amount: priceYearly * 100, 
+        currency: 'usd',
+        recurring: { interval: 'year', interval_count: 1 },
+        product_data: { name: `${title} Yearly` },
+      });
+      yearlyPriceId = yearlyPrice.id;
+    }
     
     const updatedSubscription = await updateSubscription(
       subscriptionId,
@@ -58,8 +87,8 @@ router.put('/:subscriptionId', optionalJwtAuth, async (req, res) => {
         description,
         priceMonthly,
         priceYearly,
-        stripePriceIdMonthly: monthlyPrice.id,
-        stripePriceIdYearly: yearlyPrice.id,
+        stripePriceIdMonthly: monthlyPriceId,
+        stripePriceIdYearly: yearlyPriceId,
         feature,
       },
     );

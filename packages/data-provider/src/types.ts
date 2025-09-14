@@ -193,8 +193,12 @@ export type TUser = {
   };
   subscription?: {
     status?: string;
-    type?: string;
-    expiredAt?: Date | null;
+    plan?: string;
+    billingCycle?: string;
+    startedAt?: Date | null;
+    expiresAt?: Date | null;
+    isTrial?: boolean;
+    trialDays?: number;
   },
   createdAt: string;
   updatedAt: string;
@@ -649,8 +653,12 @@ export type TCreateUser = {
 export type TUpdateUser = {
   name?: string;
   subscription?: {
-    type?: string;
-    status?:string;
-    expiredAt?: Date | null;
+    status?: string;
+    plan?: string;
+    billingCycle?: string;
+    startedAt?: Date | null;
+    expiresAt?: Date | null;
+    isTrial?: boolean;
+    trialDays?: number;
   }
 };

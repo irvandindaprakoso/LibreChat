@@ -50,6 +50,26 @@ export function createUserMethods(mongoose: typeof import('mongoose')) {
 
     const user = await User.create(userData);
 
+    // Create free trial subscription for new users (15 days)
+    const trialStartDate = new Date();
+    const trialEndDate = new Date(trialStartDate.getTime() + (15 * 24 * 60 * 60 * 1000)); // 15 days in milliseconds
+    
+    const subscriptionData = {
+      user: user._id,
+      status: 'active',
+      plan: 'Free Trial',
+      billingCycle: 'trial',
+      startedAt: trialStartDate,
+      expiresAt: trialEndDate,
+      isTrial: true,
+      trialDays: 15
+    };
+
+    // Update user with free trial subscription
+    await User.findByIdAndUpdate(user._id, {
+      subscription: subscriptionData
+    });
+
     // If balance is enabled, create or update a balance record for the user
     if (balanceConfig?.enabled && balanceConfig?.startBalance) {
       const update: {

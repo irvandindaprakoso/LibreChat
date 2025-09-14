@@ -21,6 +21,8 @@ const EditUserModal = ({ user, isOpen, onClose }: EditUserModalProps) => {
     subscriptionBillingCycle: '',
     subscriptionStartedAt: '',
     subscriptionExpiresAt: '',
+    subscriptionIsTrial: false,
+    subscriptionTrialDays: 0,
   });
 
   useEffect(() => {
@@ -36,6 +38,8 @@ const EditUserModal = ({ user, isOpen, onClose }: EditUserModalProps) => {
         subscriptionExpiresAt: user.subscription?.expiresAt
           ? new Date(user.subscription.expiresAt).toISOString().split('T')[0]
           : '',
+        subscriptionIsTrial: user.subscription?.isTrial || false,
+        subscriptionTrialDays: user.subscription?.trialDays || 0,
       });
     }
   }, [user]);
@@ -74,6 +78,12 @@ const EditUserModal = ({ user, isOpen, onClose }: EditUserModalProps) => {
       }
       if (formData.subscriptionExpiresAt) {
         updates.subscription.expiresAt = new Date(formData.subscriptionExpiresAt);
+      }
+      if (formData.subscriptionIsTrial !== undefined) {
+        updates.subscription.isTrial = formData.subscriptionIsTrial;
+      }
+      if (formData.subscriptionTrialDays !== undefined) {
+        updates.subscription.trialDays = formData.subscriptionTrialDays;
       }
     }
 
@@ -188,7 +198,44 @@ const EditUserModal = ({ user, isOpen, onClose }: EditUserModalProps) => {
                 <option value="">Select Billing Cycle</option>
                 <option value="monthly">Monthly</option>
                 <option value="yearly">Yearly</option>
+                <option value="trial">Trial</option>
+                <option value="none">None</option>
               </select>
+            </div>
+
+            {/* Trial Fields */}
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Is Trial
+                </label>
+                <select
+                  name="subscriptionIsTrial"
+                  value={formData.subscriptionIsTrial.toString()}
+                  onChange={(e) => handleChange({
+                    target: { name: 'subscriptionIsTrial', value: e.target.value === 'true' }
+                  } as React.ChangeEvent<HTMLSelectElement>)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="false">No</option>
+                  <option value="true">Yes</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Trial Days
+                </label>
+                <input
+                  type="number"
+                  name="subscriptionTrialDays"
+                  value={formData.subscriptionTrialDays}
+                  onChange={handleChange}
+                  min="0"
+                  max="365"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
             </div>
 
             {/* Subscription Dates */}

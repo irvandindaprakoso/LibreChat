@@ -32,6 +32,8 @@ import SendButton from './SendButton';
 import EditBadges from './EditBadges';
 import BadgeRow from './BadgeRow';
 import Mention from './Mention';
+import SubscriptionWarning from './SubscriptionWarning';
+import useSubscriptionCheck from '~/hooks/useSubscriptionCheck';
 import store from '~/store';
 
 const ChatForm = memo(({ index = 0 }: { index?: number }) => {
@@ -44,6 +46,10 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
   const [visualRowCount, setVisualRowCount] = useState(1);
   const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
   const [backupBadges, setBackupBadges] = useState<Pick<BadgeItem, 'id'>[]>([]);
+  const [showSubscriptionWarning, setShowSubscriptionWarning] = useState(false);
+
+  // Subscription check hook
+  const { checkSubscription } = useSubscriptionCheck();
 
   const SpeechToText = useRecoilValue(store.speechToText);
   const TextToSpeech = useRecoilValue(store.textToSpeech);
@@ -103,8 +109,8 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
     [conversation?.assistant_id, endpoint, assistantMap],
   );
   const disableInputs = useMemo(
-    () => requiresKey || invalidAssistant,
-    [requiresKey, invalidAssistant],
+    () => requiresKey || invalidAssistant || !checkSubscription().canSubmit,
+    [requiresKey, invalidAssistant, checkSubscription],
   );
 
   const handleContainerClick = useCallback(() => {
@@ -129,7 +135,23 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
     isSubmitting: isSubmitting || isSubmittingAdded,
   });
 
-  const { submitMessage, submitPrompt } = useSubmitMessage();
+  const { submitMessage: originalSubmitMessage, submitPrompt } = useSubmitMessage();
+
+  // Wrapper for submitMessage that checks subscription
+  const submitMessage = useCallback((data?: { text: string }) => {
+    const subscriptionCheck = checkSubscription();
+    
+    if (!subscriptionCheck.canSubmit) {
+      setShowSubscriptionWarning(true);
+      return;
+    }
+    
+    // Hide warning if it was showing
+    setShowSubscriptionWarning(false);
+    
+    // Call original submit function
+    originalSubmitMessage(data);
+  }, [checkSubscription, originalSubmitMessage]);
 
   const handleKeyUp = useHandleKeyUp({
     index,
@@ -216,6 +238,23 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
           : 'sm:mb-10',
       )}
     >
+      {/* Subscription Warning */}
+      {showSubscriptionWarning && (
+        <SubscriptionWarning
+          subscriptionCheck={checkSubscription()}
+          onClose={() => setShowSubscriptionWarning(false)}
+        />
+      )}
+      
+      {/* Subscription Status Indicator */}
+      {!showSubscriptionWarning && !checkSubscription().canSubmit && (
+        <div className="mb-4 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+          <div className="flex items-center space-x-2 text-sm text-yellow-700">
+            <span className="text-yellow-600">⚠️</span>
+            <span>Input disabled due to subscription status. Please check your subscription to continue.</span>
+          </div>
+        </div>
+      )}
       <div className="relative flex h-full flex-1 items-stretch md:flex-col">
         <div className={cn('flex w-full items-center', isRTL && 'flex-row-reverse')}>
           {showPlusPopover && !isAssistantsEndpoint(endpoint) && (
